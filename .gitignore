@@ -1,0 +1,25 @@
+# Claude Code — fichiers locaux à ne pas commiter
+.claude/settings.local.json
+.claude/.claude/
+
+# Codex / Cursor — fichiers locaux
+.cursor/
+.codex/
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+*~
+
+# Éditeurs
+.vscode/
+.idea/
+*.code-workspace
+
+# Logs / temporaires
+*.log
+.tmp/
+.cache/
