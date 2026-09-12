@@ -1,0 +1,4 @@
+interface:
+  display_name: "Auto-écriture"
+  short_description: "Écrit directement une prose finalisée"
+  default_prompt: "Utilise $auto-ecriture pour continuer ce passage en prose finalisée."

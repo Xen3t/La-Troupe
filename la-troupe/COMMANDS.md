@@ -7,15 +7,31 @@
 
 ## Comment ça marche
 
-Le framework repose sur deux mécanismes de l'extension Claude dans VS Code :
+Le framework repose sur trois mécanismes :
 
-1. **CLAUDE.md** — fichier lu automatiquement par Claude à chaque session. Il contient le contexte permanent : structure du framework, règles, commandes disponibles. Tu n'as rien à faire, c'est chargé automatiquement.
+1. **`AGENTS.md` / `CLAUDE.md`** — lus automatiquement à l'ouverture d'une session à la racine du workspace. Ils portent le contexte permanent et les règles de routage. Tu n'as rien à faire.
 
-2. **Slash commands** — fichiers `.md` dans `.claude/commands/`. Chaque fichier devient une commande `/nom` que tu tapes dans le chat Claude. La commande charge le prompt correspondant et active l'agent.
+2. **Skills** — un dossier par agent dans `.agents/skills/` (Codex) et `.claude/skills/` (Claude), copies strictes l'une de l'autre. **C'est par eux que passe le routage automatique** : leur `description` décide quel agent se déclenche sur une demande donnée. Ils sont aussi appelables à la main : `/archiviste`, `/historien`, `/auto-ecriture`…
 
-## Utilisation basique
+3. **Commandes** — fichiers `.md` dans `.claude/commands/`, un par prénom (`/Mira`, `/Léa`…) plus `/aide`, `/roles` et `/status`. Elles ne servent qu'au **forçage manuel** : elles ne se déclenchent jamais toutes seules.
 
-### Activer un agent
+## Utilisation normale — routage automatique
+
+Décris simplement ce que tu veux faire. La Troupe déduit le rôle principal et les éventuels appuis à partir du contexte :
+
+```text
+Cette réaction de mon personnage est-elle crédible ?
+Continue cette scène jusqu'à l'arrivée au village.
+Quelque chose cloche dans ce chapitre, trouve quoi.
+```
+
+Tu n'as pas besoin de connaître les prénoms ni les commandes. Un seul agent principal parle par défaut et signe `Prénom (Rôle) :`.
+
+Une demande comme « écris », « continue », « rédige » ou « prends la main » active le mode **auto-écriture** : La Troupe livre directement de la prose, sans brainstorming ni plan de remplacement.
+
+## Commandes manuelles — facultatives
+
+### Forcer un agent
 
 Ouvre le chat Claude dans VS Code et tape :
 
@@ -35,7 +51,7 @@ Tu peux enchaîner la commande et ta demande :
 
 Le `$ARGUMENTS` dans la commande est remplacé par tout ce que tu tapes après `/psychologue`.
 
-### Switcher ou empiler les agents
+### Forcer plusieurs expertises
 
 Tape simplement une autre commande pour switcher :
 
@@ -43,7 +59,7 @@ Tape simplement une autre commande pour switcher :
 /Nina Réécris ce passage dans un ton plus sec et nerveux.
 ```
 
-**Tu peux aussi empiler plusieurs agents dans le même tour** — ils répondent en parallèle, chacun signé par son prénom :
+Tu peux exceptionnellement imposer plusieurs expertises. Chacune signe alors sa contribution complète :
 
 ```
 /Mira /Nina Voici un passage clé. Qu'est-ce qu'il manque ?
@@ -62,6 +78,16 @@ Affiche l'index complet des agents et workflows.
 ## Workflows
 
 Les workflows combinent plusieurs agents en séquence.
+
+### Déléguer l'écriture
+
+Le workflow s'active automatiquement dès que la demande attend du texte rédigé. La commande explicite reste disponible :
+
+```text
+/auto-ecriture Continue ce chapitre jusqu'à la confrontation.
+```
+
+Nina écrit la prose et applique silencieusement les contraintes utiles de structure, psychologie, dialogue, mise en scène et lore.
 
 ### Démarrer un nouveau projet
 
@@ -153,7 +179,7 @@ Ou le pipeline complet :
 
 ## Astuces
 
-- **Empile quand c'est pertinent.** Pour des perspectives croisées, `/Mira /Eli` te donne psycho + dialogue dans le même tour. Pour une seule expertise, reste sur un seul agent.
+- **Laisse le routage automatique travailler.** Force plusieurs agents seulement si tu veux réellement plusieurs rapports séparés.
 - **Le Correcteur en dernier.** Toujours. Inutile de corriger l'orthographe d'un passage qui va être réécrit.
 - **L'Étranger ne triche pas.** Ne lui donne pas tes notes ou fiches perso — il doit lire le texte nu, comme un lecteur.
 - **L'Inspirateur aime les contraintes.** "Donne-moi des idées" → résultat moyen. "Donne-moi des idées pour un retournement au chapitre 8 qui implique le mentor et contredit ce que le lecteur croit depuis le chapitre 2" → résultat fort.
@@ -163,9 +189,9 @@ Ou le pipeline complet :
 
 ### Ajouter un agent custom
 
-1. Crée un dossier dans `modules/` (ou `core/`) avec un `SKILL.md` qui suit le même format que les autres
-2. Crée un fichier `.claude/commands/ton-agent.md` qui pointe vers le SKILL.md
-3. Ajoute-le à l'index dans `/aide`
+La procédure complète, avec la validation qui va avec, est dans [`AGENTS.md`](AGENTS.md). En résumé : un `SKILL.md` dans `modules/` ou `core/`, un adaptateur dans `.agents/skills/`, `sync_claude_skills.py` pour propager vers Claude, une commande prénom si l'agent en a un, puis `validate.ps1`.
+
+**Ne pas créer de commande portant le nom d'un skill** (`archiviste.md` à côté du skill `archiviste`) : le routage devient ambigu, et `validate.ps1` refuse désormais cette configuration.
 
 ### Modifier un agent existant
 
@@ -173,4 +199,4 @@ Ou le pipeline complet :
 
 ### Créer un workflow custom
 
-Crée un fichier `.claude/commands/ton-workflow.md` qui enchaîne plusieurs agents, comme `/diagnostic` et `/relecture` le font.
+Crée un dossier dans `workflows/` avec son `SKILL.md`, puis son adaptateur dans `.agents/skills/`, comme `/diagnostic` et `/relecture` le font.

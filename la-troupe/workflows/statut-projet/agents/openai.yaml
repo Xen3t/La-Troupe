@@ -1,0 +1,4 @@
+interface:
+  display_name: "Statut du projet"
+  short_description: "Etat des lieux automatique du projet d'ecriture"
+  default_prompt: "Fais le statut du projet en cours"

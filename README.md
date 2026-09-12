@@ -1,116 +1,127 @@
-# La Troupe — package de déploiement
+# La Troupe
 
-**La Troupe** est un framework d'écriture multi-agents. Chaque agent porte un prénom et un rôle spécialisé (Theo l'Architecte, Mira la Psychologue, Nina la Styliste, etc.). On les appelle via des slash commands, seuls ou en parallèle.
+**La Troupe** est un framework d'écriture multi-agents pour Claude Code et Codex. Chaque agent porte un prénom, un rôle et un périmètre strict : Theo bâtit la structure, Mira vérifie la psychologie des personnages, Nina tient la prose, Hugo contrôle la cohérence…
 
-Ce package contient tout ce qu'il faut pour installer La Troupe dans un nouveau workspace.
+Tu n'as pas à choisir qui intervient. Tu décris ta demande en langage naturel ; La Troupe choisit l'agent principal et mobilise en silence les expertises utiles.
 
-## Contenu du package
+## Ce qui a changé depuis la première version
 
-```
-la-troupe-deploy/
-├── la-troupe/             # Le framework lui-même (SKILL.md de chaque agent)
-│   ├── SKILL.md           # Orchestrateur
-│   ├── CLAUDE.md          # Doc du framework
-│   ├── COMMANDS.md        # Guide d'utilisation
-│   ├── core/              # 9 agents toujours là
-│   └── modules/           # 6 modules activables
-├── .claude/
-│   └── commands/          # Slash commands pour Claude Code
-├── .agents/
-│   └── skills/            # Wrappers pour Codex CLI / OpenAI agents
-├── CLAUDE.md              # À placer à la racine du workspace (Claude)
-├── AGENTS.md              # À placer à la racine du workspace (Codex)
-└── README.md              # Ce fichier
-```
+- **Routage automatique.** Les agents ne s'appellent plus à la main : la description de chaque skill décide qui se déclenche. Les commandes par prénom deviennent un forçage facultatif.
+- **Une seule voix par défaut.** Un agent principal parle, ses appuis restent silencieux. Signature complète : `Prénom (Rôle) :`.
+- **Quatre nouveaux agents** : Léa (Archiviste), Mara (Iconographe), Bernard (Historien) et Aléa (Hasard).
+- **Workflows sous forme de skills** : `auto-ecriture` et `propagation` s'ajoutent à `diagnostic`, `relecture`, `statut-projet` et `nouveau-projet`.
+- **Rôles resserrés** : Theo construit une structure, Nora diagnostique l'existant ; Sutha crée le lore, Hugo audite sans rien inventer.
+- **Claude et Codex alignés** : mêmes consignes (`AGENTS.md`), mêmes adaptateurs dans `.claude/skills/` et `.agents/skills/`.
+- **Projets déclarés** par un manifeste `.troupe.yml`, que `nouveau-projet` crée avec la source de vérité, l'atelier `_wip/` et le backlog.
+- **Validation automatique** de la cohérence du framework : adaptateurs, commandes, signatures et isolation des projets.
 
-## Installation dans un nouveau workspace
+## Installation
 
-1. **Copie l'intégralité du contenu** de ce package à la racine de ton nouveau workspace :
-   - `la-troupe/` → dossier du framework
-   - `.claude/commands/` → slash commands Claude Code
-   - `.agents/skills/` → skills Codex (si tu utilises Codex)
-   - `CLAUDE.md` → instructions pour Claude Code
-   - `AGENTS.md` → instructions pour Codex
+1. Copie à la racine de ton workspace :
+   - `la-troupe/` — le framework ;
+   - `.claude/` — skills et commandes pour Claude Code ;
+   - `.agents/` — skills pour Codex ;
+   - `AGENTS.md` et `CLAUDE.md` — consignes du workspace (`CLAUDE.md` importe simplement `AGENTS.md`).
+2. Complète `AGENTS.md` avec tes projets et tes règles locales.
+3. Ouvre le workspace dans Claude Code (terminal ou extension VS Code) ou dans Codex.
+4. Vérifie l'installation : `/roles` doit afficher la troupe.
 
-2. **Ouvre le workspace** dans VS Code (extension Claude installée) ou ton client préféré.
+Pour démarrer un projet, décris-le simplement ou lance `/nouveau-projet`.
 
-3. **Teste** : tape `/roles` dans le chat. Si la liste des agents s'affiche, c'est bon.
+## Utilisation
 
-## Personnaliser pour ton projet
+Écris ce que tu veux, sans nommer d'agent :
 
-Édite `CLAUDE.md` (et/ou `AGENTS.md`) à la racine pour :
-- Ajouter la liste de tes projets en cours
-- Ajouter des règles spécifiques à ton workspace
-- Documenter ton organisation de dossiers
-
-Le contenu de `la-troupe/` n'a normalement pas besoin d'être modifié — c'est le framework lui-même.
-
-## Comment utiliser La Troupe
-
-### Commandes essentielles
-
-- `/aide` — liste complète des commandes
-- `/roles` — qui fait quoi dans La Troupe
-- `/nouveau-projet` — initialiser un projet guidé
-- `/status` — état du projet en cours
-- `/diagnostic <texte>` — passage Nora + Étranger
-- `/relecture <texte>` — pipeline complet Nora → Étranger → Otto
-
-### Appeler un agent
-
-Par prénom ou par rôle (alias) :
-
-```
-/Mira     ou    /psychologue
-/Nina     ou    /styliste
-/Theo     ou    /architecte
-/Iris     ou    /da
+```text
+Cette réaction de mon personnage est-elle crédible ?
+Continue cette scène jusqu'à l'arrivée au village.
+Quelque chose cloche dans ce chapitre, trouve quoi.
+J'ai renommé la capitale : propage le changement.
 ```
 
-### Empiler plusieurs agents
+Pour imposer un rôle malgré le routage :
 
+```text
+/Mira Analyse ce personnage : [...]
+/psychologue Analyse ce personnage : [...]
+/Mira /Nina Voici un passage clé. Qu'est-ce qu'il manque ?
 ```
-/Mira /Nina Analyse ce passage de plusieurs angles
-```
 
-Les deux agents répondent dans le même tour, chacun signe ses interventions par `Prénom :`.
+`/aide` liste toutes les commandes, `/roles` rappelle qui fait quoi, `/status` fait l'état des lieux du projet. Le guide complet est dans [`la-troupe/COMMANDS.md`](la-troupe/COMMANDS.md).
 
-## Les 15 agents
+## La troupe
 
-### Core (toujours là)
+### Core
 
-| Prénom | Rôle |
+| Prénom | Rôle | Périmètre |
+|---|---|---|
+| Theo | Architecte Narratif | Structure, arcs, actes, chapitres |
+| Mira | Psychologue | Profils, cohérence des comportements |
+| Nina | Styliste | Voix narrative, ton, registre, prose |
+| Kai | Metteur en Scène | Découpage scénique, espace, tension visuelle |
+| Nora | Script Doctor | Diagnostic structurel, rythme, scènes mortes |
+| Étranger | Lecteur froid | Lecture sans contexte, test du lecteur naïf |
+| Otto | Correcteur | Orthographe, grammaire, typographie |
+| Noa | Inspirateur | Déblocage créatif, sortie d'impasse |
+| Léa | Archiviste | Pages de wiki, fiches canoniques, classement des notes |
+| Sasha | Assistant | Synthèse, suivi, tâches transversales |
+
+### Modules
+
+| Prénom | Rôle | Périmètre |
+|---|---|---|
+| Sutha | Worldbuilder | Création et réparation du lore |
+| Eli | Dialoguiste | Voix des personnages, sous-texte |
+| Hugo | Vérificateur | Audit factuel et respect des règles actées |
+| Milo | Humoriste | Timing comique, registres d'humour |
+| Aria | Musique | Paroles, direction musicale |
+| Iris | DA | Identité visuelle, moodboards, pochettes |
+| Mara | Iconographe | Prompts d'illustration, intégration des images fournies |
+| Bernard | Historien | Datation, chronologie, calendriers, anachronismes |
+| Aléa | Hasard | Dix possibles crédibles classés, puis tirage pondéré |
+
+### Workflows
+
+| Skill | Fonction |
 |---|---|
-| Theo | Architecte Narratif — structure, arcs, séquencier |
-| Mira | Psychologue — profils, cohérence comportementale |
-| Nina | Styliste — voix, ton, prose |
-| Kai | Metteur en Scène — découpage scénique, espace |
-| Nora | Script Doctor — diagnostic structurel, rythme |
-| Étranger | Lecteur froid — test du lecteur naïf |
-| Otto | Correcteur — orthographe, grammaire |
-| Noa | Inspirateur — déblocage créatif |
-| Sasha | Assistant — polyvalent |
+| `auto-ecriture` | Écrit directement la scène, le chapitre ou le dialogue demandé, sous la plume de Nina |
+| `diagnostic` | Diagnostic de Nora et lecture froide de l'Étranger |
+| `relecture` | Diagnostic macro, lecture froide, contrôles utiles, correction finale |
+| `propagation` | Répercute un fait de canon modifié sur les pages qui en dépendent, contrôle final par Hugo |
+| `statut-projet` | État des lieux depuis le manifeste, les fichiers, le backlog et Git (`/status`) |
+| `nouveau-projet` | Initialise un projet : manifeste, source de vérité, atelier, backlog, guide de style |
 
-### Modules (activables selon le projet)
+## Comment ça marche
 
-| Prénom | Rôle |
-|---|---|
-| Sutha | Worldbuilder — univers, lore, systèmes |
-| Eli | Dialoguiste — voix, sous-texte |
-| Hugo | Vérificateur — exactitude factuelle |
-| Milo | Humoriste — timing comique |
-| Aria | Musique — paroles + direction musicale |
-| Iris | DA — direction visuelle, pochettes, affiches |
+```text
+la-troupe/
+├── SKILL.md          # Orchestrateur : liste des agents et règles de routage (référence unique)
+├── AGENTS.md         # Architecture et procédure d'ajout d'un agent
+├── COMMANDS.md       # Guide d'utilisation
+├── core/             # Agents toujours présents
+├── modules/          # Agents spécialisés
+├── workflows/        # Enchaînements de plusieurs agents
+└── scripts/          # Synchronisation et validation
+.agents/skills/       # Adaptateurs Codex, un par agent ou workflow
+.claude/skills/       # Copie stricte des adaptateurs, pour Claude
+.claude/commands/     # Forçage manuel par prénom, /aide, /roles, /status
+```
+
+- **Les skills routent.** Chaque adaptateur pointe vers le `SKILL.md` du framework ; sa `description` décide quand l'agent se déclenche.
+- **Les commandes forcent.** Elles portent toutes `disable-model-invocation: true` et ne se déclenchent jamais seules.
+- **Le framework reste générique.** Aucun agent ne cite un projet : les conventions propres à ton monde vivent dans le dossier du projet.
 
 ## Étendre La Troupe
 
-Pour ajouter un agent custom :
+La procédure d'ajout d'un agent est dans [`la-troupe/AGENTS.md`](la-troupe/AGENTS.md) : un `SKILL.md`, un adaptateur Codex, la synchronisation vers Claude, une commande prénom éventuelle, puis la validation.
 
-1. Crée un dossier dans `la-troupe/core/` ou `la-troupe/modules/` avec un `SKILL.md` qui suit le format des autres
-2. Crée un fichier `.claude/commands/<nom>.md` qui pointe vers le SKILL.md
-3. Optionnel : crée un wrapper dans `.agents/skills/<nom>/SKILL.md` pour Codex
-4. Ajoute l'agent dans `/aide` et `/roles`
+```text
+py la-troupe/scripts/sync_claude_skills.py
+powershell -File la-troupe/scripts/validate.ps1
+```
+
+La validation demande Python 3 avec PyYAML (`pip install pyyaml`) et Windows PowerShell 5.1 ou PowerShell 7 (`pwsh`). Elle échoue sur un agent sans adaptateur, une commande auto-invocable ou doublonnant un skill, une cible absente, une signature manquante, ou le nom d'un projet du workspace cité dans le framework.
 
 ## Licence
 
-CC0 1.0 — domaine public. Tu peux copier, modifier, distribuer, vendre, sans demander permission ni créditer. Voir `LICENSE`.
+CC0 1.0 — domaine public. Tu peux copier, modifier, distribuer et vendre sans demander la permission ni créditer. Voir [`LICENSE`](LICENSE).

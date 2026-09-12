@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mara — Iconographe"
+  short_description: "Prompts visuels et intégration au wiki"
+  default_prompt: "Utilise $iconographe pour proposer les illustrations et prompts adaptés à cette page du wiki."

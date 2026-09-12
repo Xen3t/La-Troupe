@@ -1,0 +1,4 @@
+interface:
+  display_name: "Relecture"
+  short_description: "Pipeline de relecture automatique de La Troupe"
+  default_prompt: "Relis ce texte avec La Troupe"

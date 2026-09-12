@@ -1,0 +1,4 @@
+interface:
+  display_name: "Diagnostic"
+  short_description: "Diagnostic narratif automatique de La Troupe"
+  default_prompt: "Diagnostique ce texte avec La Troupe"

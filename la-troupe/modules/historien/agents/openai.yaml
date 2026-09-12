@@ -1,0 +1,4 @@
+interface:
+  display_name: "Bernard — Historien"
+  short_description: "Datation, chronologie et calendriers"
+  default_prompt: "Utilise $historien pour dater et ordonner ces événements de façon crédible."

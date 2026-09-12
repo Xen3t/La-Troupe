@@ -1,0 +1,4 @@
+interface:
+  display_name: "Nouveau projet"
+  short_description: "Initialise un projet compatible avec La Troupe"
+  default_prompt: "Initialise ce nouveau projet d'ecriture"
